@@ -47,6 +47,9 @@ export default function App() {
     >
       {!dataFetched && (
         <button
+          data-testid="fetch-data-button"
+          onClick={handleInitialFetchData}
+          disabled={loading || dataFetched}
           style={{
             display: "flex",
             alignItems: "centre",
@@ -54,9 +57,6 @@ export default function App() {
             marginInline: "auto",
             minWidth: "200px",
           }}
-          data-testid="fetch-data-button"
-          onClick={handleInitialFetchData}
-          disabled={loading || dataFetched}
         >
           {loading ? <Loader /> : "Fetch Data"}
         </button>
@@ -74,6 +74,8 @@ export default function App() {
         >
           {data.map((item) => (
             <li
+              data-testid={`data-item-${item.id}`}
+              key={item.id}
               style={{
                 flexShrink: 0,
                 padding: "1rem",
@@ -81,8 +83,6 @@ export default function App() {
                 borderRadius: "1rem",
                 flex: "0 0 300px",
               }}
-              data-testid="data-item"
-              key={item.id}
             >
               <div>
                 <h2>
