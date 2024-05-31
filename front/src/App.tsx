@@ -1,4 +1,5 @@
 import { useState, Suspense } from "react";
+import Loader from "./components/Loader";
 
 type Data = {
   id: number;
@@ -20,7 +21,7 @@ export default function App() {
     const request = await fetch(`http://localhost:3000/?page=${page}&limit=10`);
     const response = await request.json();
     setLoading(false);
-    return response.data;
+    return await response.data;
   };
 
   const handleInitialFetchData = async () => {
@@ -39,27 +40,77 @@ export default function App() {
   };
 
   return (
-    <div>
-      <button
-        onClick={handleInitialFetchData}
-        disabled={loading || dataFetched}
-      >
-        {loading ? "Loading..." : "Fetch Data"}
-      </button>
+    <div
+      style={{
+        paddingBlock: "3rem",
+      }}
+    >
+      {!dataFetched && (
+        <button
+          style={{
+            display: "flex",
+            alignItems: "centre",
+            justifyContent: "center",
+            marginInline: "auto",
+            minWidth: "200px",
+          }}
+          data-testid="fetch-data-button"
+          onClick={handleInitialFetchData}
+          disabled={loading || dataFetched}
+        >
+          {loading ? <Loader /> : "Fetch Data"}
+        </button>
+      )}
 
       <Suspense fallback={<div>Loading...</div>}>
-        <div>
+        <ul
+          data-testid="data-list"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "2rem",
+            listStyle: "none",
+          }}
+        >
           {data.map((item) => (
-            <p key={item.id}>
-              {item.first_name} - {item.last_name}
-            </p>
+            <li
+              style={{
+                flexShrink: 0,
+                padding: "1rem",
+                border: "1px solid #555",
+                borderRadius: "1rem",
+                flex: "0 0 300px",
+              }}
+              data-testid="data-item"
+              key={item.id}
+            >
+              <div>
+                <h2>
+                  {item.last_name.slice(0, 1)} - {item.first_name}
+                </h2>
+                <p>Gender: {item.gender}</p>
+                <p>Email: {item.email}</p>
+                <code>IP: {item.ip_address}</code>
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </Suspense>
 
       {dataFetched && (
-        <button onClick={handleFetchMoreData} disabled={loading}>
-          {loading ? "Loading more..." : "More"}
+        <button
+          style={{
+            display: "flex",
+            alignItems: "centre",
+            justifyContent: "center",
+            marginInline: "auto",
+            minWidth: "200px",
+          }}
+          data-testid="more-data-button"
+          onClick={handleFetchMoreData}
+          disabled={loading}
+        >
+          {loading ? <Loader /> : "More"}
         </button>
       )}
     </div>

@@ -8,27 +8,29 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "cy:open": "cypress open",
-    "cypress:run": "pnpx cypress run --browser chrome",
-    "merge-reports": "mochawesome-merge cypress/reports/mochawesome/*.json > cypress/reports/mochawesome/mochawesome.json",
-    "generate-report": "marge cypress/reports/mochawesome/mochawesome.json --reportDir cypress/reports/mochawesome"
+    "cy:open": "pnpm dlx cypress open"
   },
   "dependencies": {
+    "@cypress/vite-dev-server": "^5.1.0",
+    "@cypress/webpack-preprocessor": "^6.0.1",
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "cypress-cucumber-preprocessor": "^4.3.1",
+    "esbuild": "^0.21.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/mocha": "^10.0.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.0",
+    "babel-plugin-istanbul": "^6.1.1",
     "cypress": "^13.10.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "istanbul-lib-coverage": "^3.2.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   }
