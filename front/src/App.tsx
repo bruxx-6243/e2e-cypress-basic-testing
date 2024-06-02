@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Loader from "./components/Loader";
 
 type Data = {
@@ -16,22 +16,26 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [dataFetched, setDataFetched] = useState(false);
 
-  const fetchData = async (page: number) => {
+  const fetchData = useCallback(async (page: number) => {
     setLoading(true);
     const request = await fetch(`http://localhost:3000/?page=${page}&limit=10`);
     const response = await request.json();
     setLoading(false);
-    return await response.data;
-  };
+    return response.data;
+  }, []);
 
-  const handleInitialFetchData = async () => {
+  const fetchInitialData = useCallback(async () => {
+    const newData = await fetchData(1);
+    setData(newData);
+    setPage(2);
+    setDataFetched(true);
+  }, [fetchData]);
+
+  useEffect(() => {
     if (!dataFetched) {
-      const newData = await fetchData(page);
-      setData(newData);
-      setPage((prevPage) => prevPage + 1);
-      setDataFetched(true);
+      fetchInitialData();
     }
-  };
+  }, [dataFetched, fetchInitialData]);
 
   const handleFetchMoreData = async () => {
     const newData = await fetchData(page);
@@ -43,59 +47,37 @@ export default function App() {
     <div
       style={{
         paddingBlock: "3rem",
-      }}
-    >
-      {!dataFetched && (
-        <button
-          data-testid="fetch-data-button"
-          onClick={handleInitialFetchData}
-          disabled={loading || dataFetched}
-          style={{
-            display: "flex",
-            alignItems: "centre",
-            justifyContent: "center",
-            marginInline: "auto",
-            minWidth: "200px",
-          }}
-        >
-          {loading ? <Loader /> : "Fetch Data"}
-        </button>
-      )}
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <ul
-          data-testid="data-list"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "2rem",
-            listStyle: "none",
-          }}
-        >
-          {data.map((item) => (
-            <li
-              data-testid={`data-item-${item.id}`}
-              key={item.id}
-              style={{
-                flexShrink: 0,
-                padding: "1rem",
-                border: "1px solid #555",
-                borderRadius: "1rem",
-                flex: "0 0 300px",
-              }}
-            >
-              <div>
-                <h2>
-                  {item.last_name.slice(0, 1)} - {item.first_name}
-                </h2>
-                <p>Gender: {item.gender}</p>
-                <p>Email: {item.email}</p>
-                <code>IP: {item.ip_address}</code>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </Suspense>
+      }}>
+      <ul
+        data-testid="data-list"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "2rem",
+          listStyle: "none",
+        }}>
+        {data.map((item) => (
+          <li
+            data-testid={`data-item-${item.id}`}
+            key={item.id}
+            style={{
+              flexShrink: 0,
+              padding: "1rem",
+              border: "1px solid #555",
+              borderRadius: "1rem",
+              flex: "0 0 300px",
+            }}>
+            <div>
+              <h2>
+                {item.last_name.slice(0, 1)} - {item.first_name}
+              </h2>
+              <p>Gender: {item.gender}</p>
+              <p>Email: {item.email}</p>
+              <code>IP: {item.ip_address}</code>
+            </div>
+          </li>
+        ))}
+      </ul>
 
       {dataFetched && (
         <button
@@ -108,8 +90,7 @@ export default function App() {
           }}
           data-testid="more-data-button"
           onClick={handleFetchMoreData}
-          disabled={loading}
-        >
+          disabled={loading}>
           {loading ? <Loader /> : "More"}
         </button>
       )}
